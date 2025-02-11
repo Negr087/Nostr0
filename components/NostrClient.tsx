@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { QRCodeSVG } from "qrcode.react";
-import Link from "next/link"; // Importamos Link de Next.js
 
 export default function NostrClient() {
   const [notes, setNotes] = useState<any[]>([]);
