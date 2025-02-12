@@ -4,7 +4,7 @@ Nostr0 is a web application that allows you to search and visualize Nostr events
 
 ## Screenshots
 
-![Nostr0] ([https://github.com/Negr087/Nostr0/blob/d4cc63c07b25750a17eceb8d9eb3a7d060d7941b/Screenshot_6.png]
+![Nostr0] ([https://github.com/Negr087/Nostr0/blob/d4cc63c07b25750a17eceb8d9eb3a7d060d7941b/Screenshot_6.png])
 
 ## Features
 
