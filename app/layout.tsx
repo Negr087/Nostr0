@@ -5,10 +5,11 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Nostr0',
+  title: 'Nostr0 - Nostr Client',
   description: 'A beautiful Nostr client for viewing user notes',
-icons: {
-    icon: '/nostr0.ico',
+  icons: {
+    icon: '/nostr0.ico', // Ruta al archivo ICO
+  },
 }
 
 export default function RootLayout({
@@ -19,7 +20,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>{children}</body>
-      <link rel="shortcut icon" href="/nostr0.ico" />
     </html>
   )
 }
