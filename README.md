@@ -4,7 +4,7 @@ Nostr0 is a web application that allows you to search and visualize Nostr events
 
 ## Screenshots
 
-![Nostr0]([[https://via.placeholder.com/800x400](https://image.nostr.build/efc607d886d88de17d4a65c99002cff55a322f16626e08f908bcabea664866ca.png)](https://image.nostr.build/efc607d886d88de17d4a65c99002cff55a322f16626e08f908bcabea664866ca.png))  
+![Nostr0]([[https://via.placeholder.com/800x400](https://image.nostr.build/efc607d886d88de17d4a65c99002cff55a322f16626e08f908bcabea664866ca.png)] 
 
 ## Features
 
@@ -47,17 +47,6 @@ Nostr0 is a web application that allows you to search and visualize Nostr events
 - Nostr-tools: Library for interacting with the Nostr network.
 - React Hook Form: Form handling in React.
 - PNPM: Fast and efficient package manager.
-
-## Project Structure
-nostr0/
- ─ components/       # React components
- ─ lib/              # Utilities and helper functions
- ─ pages/            # Application routes
- ─ public/           # Static files (images, etc.)
- ─ styles/           # Global styles
- ─ .env.local        # Environment variables
- ─ next.config.js    # Next.js configuration
- ─ README.md         # Project documentation
 
 ## Contributing
 Contributions are welcome! If you have any ideas, suggestions, or find a bug, please open an issue or submit a pull request.
