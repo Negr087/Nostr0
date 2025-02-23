@@ -10,11 +10,11 @@ import { QRCodeSVG } from "qrcode.react";
 
 export default function NostrClient() {
   const [notes, setNotes] = useState<any[]>([]);
-  const [npub, setNpub] = useState("");
+  const [searchString, setSearchString] = useState(""); // Campo unificado para npub o NIP-05
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showQR, setShowQR] = useState(false); // Estado para controlar la visibilidad del QR
+  const [showQR, setShowQR] = useState(false);
 
   const pool = new SimplePool();
   const relays = [
@@ -23,7 +23,7 @@ export default function NostrClient() {
     "wss://nos.lol",
     "wss://relay.snort.social",
   ];
-  // Define el componente GitHubLogo
+
   const GitHubLogo = () => (
     <svg
       width="24"
@@ -39,29 +39,70 @@ export default function NostrClient() {
     </svg>
   );
 
-  // Función para restablecer el estado inicial
   const resetState = () => {
-    setNpub(""); // Borra el npub
-    setStartDate(""); // Reinicia la fecha de inicio
-    setEndDate(""); // Reinicia la fecha de fin
-    setNotes([]); // Limpia las notas
-    setIsLoading(false); // Detiene la carga si estaba activa
-    setShowQR(false); // Cierra el QR si estaba abierto
+    setSearchString(""); // Limpiar el campo de búsqueda unificado
+    setStartDate("");
+    setEndDate("");
+    setNotes([]);
+    setIsLoading(false);
+    setShowQR(false);
+  };
+
+  const verifyNip05 = async (nip05: string): Promise<string | null> => {
+    try {
+      const [name, domain] = nip05.split("@");
+      const url = `https://${domain}/.well-known/nostr.json?name=${name}`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.names && data.names[name]) {
+        return data.names[name];
+      } else {
+        alert("NIP-05 verification failed: Name not found.");
+        return null;
+      }
+    } catch (error) {
+      console.error("Error verifying NIP-05:", error);
+      alert("Error verifying NIP-05. Please try again.");
+      return null;
+    }
   };
 
   const handleSearch = async () => {
     setIsLoading(true);
     setNotes([]);
     try {
-      const npubRegex = /^npub1[ac-hj-np-z02-9]{58}$/;
-      if (!npubRegex.test(npub)) {
-        alert("Invalid npub format");
-        return;
-      }
+      let pubkeyToSearch: string | null = null;
 
-      const { type, data: pubkey } = nip19.decode(npub);
-      if (type !== "npub") {
-        throw new Error("Invalid npub");
+      if (searchString) {
+        // Primero, verifica si es un npub
+        const npubRegex = /^npub1[ac-hj-np-z02-9]{58}$/;
+        if (npubRegex.test(searchString)) {
+          try {
+            const { type, data: pubkey } = nip19.decode(searchString);
+            if (type === "npub") {
+              pubkeyToSearch = pubkey;
+            } else {
+              alert("Invalid npub");
+              return;
+            }
+          } catch (error) {
+            alert("Invalid npub");
+            return;
+          }
+        } else if (searchString.includes("@")) {
+          // Si no es un npub, verifica si parece un NIP-05
+          pubkeyToSearch = await verifyNip05(searchString);
+          if (!pubkeyToSearch) {
+            return; // Detener la búsqueda si la verificación falla
+          }
+        } else {
+          alert("Please enter a valid npub or NIP-05 identifier.");
+          return;
+        }
+      } else {
+        alert("Please enter an npub or a NIP-05 identifier.");
+        return;
       }
 
       const since = startDate
@@ -73,12 +114,11 @@ export default function NostrClient() {
 
       const events = await pool.querySync(relays, {
         kinds: [1],
-        authors: [pubkey],
+        authors: [pubkeyToSearch],
         since,
         until,
       });
 
-      // Reemplazar nprofile con nombres de usuario
       const notesWithUsernames = await Promise.all(
         events.map(async (note) => {
           const contentWithUsernames = await replaceNprofileWithUsername(
@@ -90,8 +130,8 @@ export default function NostrClient() {
 
       setNotes(notesWithUsernames);
     } catch (error) {
-      console.error("Error searching for npub:", error);
-      alert("Error searching for npub. Please try again.");
+      console.error("Error searching:", error);
+      alert("Error searching. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -145,7 +185,6 @@ export default function NostrClient() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-black to-violet-900 p-4">
-      {/* Envolvemos el título en un div con onClick para resetear el estado */}
       <div onClick={resetState} className="cursor-pointer">
         <h1 className="text-6xl font-extrabold text-center bg-clip-text text-transparent bg-gradient-to-r from-violet-400 via-purple-500 to-pink-400">
           Nostr0
@@ -161,11 +200,11 @@ export default function NostrClient() {
           <div className="flex flex-col items-center space-y-4 mb-6">
             <Input
               type="text"
-              placeholder="Enter npub..."
-              value={npub}
-              onChange={(e) => setNpub(e.target.value)}
+              placeholder="Enter npub or NIP-05 identifier (name@domain.com)..."
+              value={searchString}
+              onChange={(e) => setSearchString(e.target.value)}
               className="flex-grow bg-gray-800/50 text-violet-200 placeholder-gray-500 border-gray-700"
-              aria-label="Enter npub"
+              aria-label="Enter npub or NIP-05"
             />
             <Input
               type="date"
@@ -199,8 +238,6 @@ export default function NostrClient() {
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-violet-500"></div>
             </div>
           )}
-
-          {/* Mostrar las notas */}
           <div className="space-y-4">
             {notes.map((note) => {
               const mediaUrls = extractMediaUrls(note.content);
@@ -252,7 +289,6 @@ export default function NostrClient() {
         </CardContent>
       </Card>
 
-      {/* Mostrar el código QR */}
       {showQR && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-gray-800 p-6 rounded-lg">
@@ -282,7 +318,6 @@ export default function NostrClient() {
         </div>
       )}
 
-      {/* Rayito ⚡️ para abrir el QR */}
       <div className="text-center mt-8">
         <span
           className="text-yellow-400 cursor-pointer"
@@ -303,13 +338,12 @@ export default function NostrClient() {
           negr0
         </a>
         <img
-          src="/avestruz.png" // Asegúrate de que la ruta sea correcta
+          src="/avestruz.png"
           alt="Logo"
-          className="ml-2 h-6 w-6" // Ajusta el tamaño según sea necesario
+          className="ml-2 h-6 w-6"
         />
-        {/* Agrega el ícono de GitHub aquí */}
         <a
-          href="https://github.com/Negr087/Nostr0" // Reemplaza con la URL de tu repositorio
+          href="https://github.com/Negr087/Nostr0"
           target="_blank"
           rel="noopener noreferrer"
           className="ml-2 text-violet-400 hover:text-pink-400 transition-colors"
