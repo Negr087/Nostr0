@@ -200,7 +200,7 @@ export default function NostrClient() {
           <div className="flex flex-col items-center space-y-4 mb-6">
             <Input
               type="text"
-              placeholder="Enter npub or NIP-05 identifier (name@domain.com)..."
+              placeholder="Enter npub or NIP-05 (name@domain.com)"
               value={searchString}
               onChange={(e) => setSearchString(e.target.value)}
               className="flex-grow bg-gray-800/50 text-violet-200 placeholder-gray-500 border-gray-700"
