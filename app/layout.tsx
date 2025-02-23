@@ -7,6 +7,9 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Nostr0 - Nostr Client',
   description: 'A beautiful Nostr client for viewing user notes',
+  icons: {
+    icon: '/nostr0.png', // Esto apunta a /public/nostr0.png
+  },
 }
 
 export default function RootLayout({
