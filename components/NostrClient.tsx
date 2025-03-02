@@ -197,96 +197,101 @@ export default function NostrClient() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center space-y-4 mb-6">
-            <Input
-              type="text"
-              placeholder="Enter npub or NIP-05 (name@domain.com)"
-              value={searchString}
-              onChange={(e) => setSearchString(e.target.value)}
-              className="flex-grow bg-gray-800/50 text-violet-200 placeholder-gray-500 border-gray-700"
-              aria-label="Enter npub or NIP-05"
-            />
-            <Input
-              type="date"
-              placeholder="Start date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="flex-grow bg-gray-800/50 text-violet-200 placeholder-gray-500 border-gray-700"
-              aria-label="Start date"
-            />
-            <Input
-              type="date"
-              placeholder="End date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="flex-grow bg-gray-800/50 text-violet-200 placeholder-gray-500 border-gray-700"
-              aria-label="End date"
-            />
-            <div className="flex justify-center w-full">
-              <Button
-                onClick={handleSearch}
-                className="bg-violet-600 hover:bg-violet-700 transition-colors"
-                disabled={isLoading}
-                aria-label="Search"
-              >
-                <Search className="h-4 w-4" />
-              </Button>
+  <div className="flex flex-col items-center space-y-4 mb-6">
+    <Input
+      type="text"
+      placeholder="Enter npub or NIP-05 (name@domain.com)"
+      value={searchString}
+      onChange={(e) => setSearchString(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          handleSearch();
+        }
+      }}
+      className="flex-grow bg-gray-800/50 text-violet-200 placeholder-gray-500 border-gray-700"
+      aria-label="Enter npub or NIP-05"
+    />
+    <Input
+      type="date"
+      placeholder="Start date"
+      value={startDate}
+      onChange={(e) => setStartDate(e.target.value)}
+      className="flex-grow bg-gray-800/50 text-violet-200 placeholder-gray-500 border-gray-700"
+      aria-label="Start date"
+    />
+    <Input
+      type="date"
+      placeholder="End date"
+      value={endDate}
+      onChange={(e) => setEndDate(e.target.value)}
+      className="flex-grow bg-gray-800/50 text-violet-200 placeholder-gray-500 border-gray-700"
+      aria-label="End date"
+    />
+    <div className="flex justify-center w-full">
+      <Button
+        onClick={handleSearch}
+        className="bg-violet-600 hover:bg-violet-700 transition-colors"
+        disabled={isLoading}
+        aria-label="Search"
+      >
+        <Search className="h-4 w-4" />
+      </Button>
+    </div>
+  </div>
+  {isLoading && (
+    <div className="text-center">
+      <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-violet-500"></div>
+    </div>
+  )}
+  <div className="space-y-4">
+    {notes.map((note) => {
+      const mediaUrls = extractMediaUrls(note.content);
+      return (
+        <div
+          key={note.id}
+          className="bg-gray-800/30 p-4 rounded-lg border border-violet-500/20 backdrop-blur-sm overflow-hidden"
+        >
+          <p className="text-sm text-gray-400 mb-2">
+            {formatDate(note.created_at)}
+          </p>
+          <p className="text-gray-300 leading-relaxed break-words">
+            {note.content}
+          </p>
+          {mediaUrls.map((url, index) => (
+            <div key={index} className="mt-4">
+              {url.match(/\.(mp4|webm|mov|avi)$/i) ? (
+                <video
+                  src={url}
+                  controls
+                  className="rounded-lg max-w-full"
+                ></video>
+              ) : (
+                <img
+                  src={url}
+                  alt="Attached media"
+                  className="rounded-lg max-w-full"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              )}
             </div>
+          ))}
+          <div className="text-right mt-4">
+            <a
+              href={`https://njump.me/${note.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-violet-400 hover:text-pink-400 transition-colors underline"
+            >
+              Open
+            </a>
           </div>
-          {isLoading && (
-            <div className="text-center">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-violet-500"></div>
-            </div>
-          )}
-          <div className="space-y-4">
-            {notes.map((note) => {
-              const mediaUrls = extractMediaUrls(note.content);
-              return (
-                <div
-                  key={note.id}
-                  className="bg-gray-800/30 p-4 rounded-lg border border-violet-500/20 backdrop-blur-sm overflow-hidden"
-                >
-                  <p className="text-sm text-gray-400 mb-2">
-                    {formatDate(note.created_at)}
-                  </p>
-                  <p className="text-gray-300 leading-relaxed break-words">
-                    {note.content}
-                  </p>
-                  {mediaUrls.map((url, index) => (
-                    <div key={index} className="mt-4">
-                      {url.match(/\.(mp4|webm|mov|avi)$/i) ? (
-                        <video
-                          src={url}
-                          controls
-                          className="rounded-lg max-w-full"
-                        ></video>
-                      ) : (
-                        <img
-                          src={url}
-                          alt="Attached media"
-                          className="rounded-lg max-w-full"
-                          onError={(e) => {
-                            e.currentTarget.style.display = "none";
-                          }}
-                        />
-                      )}
-                    </div>
-                  ))}
-                  <div className="text-right mt-4">
-                    <a
-                      href={`https://njump.me/${note.id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-violet-400 hover:text-pink-400 transition-colors underline"
-                    >
-                      Open
-                    </a>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
+        </div>
+      );
+    })}
+  </div>
+</CardContent>
       </Card>
 
       {showQR && (
