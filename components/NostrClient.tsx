@@ -302,14 +302,14 @@ export default function NostrClient() {
             </h2>
             <div className="flex justify-center">
               <QRCodeSVG
-                value="negr0@lawallet.ar"
+                value="negr0@blink.sv"
                 size={256}
                 bgColor="transparent"
                 fgColor="#ffffff"
               />
             </div>
             <p className="mt-4 text-sm text-center text-gray-400">
-              Scan this QR code to send sats to negr0@lawallet.ar.
+              Scan this QR code to send sats to negr0@blink.sv.
             </p>
             <div className="text-center mt-4">
               <button
