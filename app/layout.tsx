@@ -5,10 +5,10 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Nostr0 - Nostr Client',
+  title: 'Nostr0',
   description: 'A beautiful Nostr client for viewing user notes',
   icons: {
-    icon: '/nostr0.png', // Esto apunta a /public/nostr0.png
+    icon: '/nostr.png', // Esto apunta a /public/nostr.png
   },
 }
 
