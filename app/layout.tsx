@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: 'Nostr0',
   description: 'A beautiful Nostr client for viewing user notes',
   icons: {
-    icon: '/nostr.png', // Esto apunta a /public/nostr.png
+    icon: '/nostro.png', // Esto apunta a /public/nostro.png
   },
 }
 
